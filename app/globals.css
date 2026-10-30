@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+/* Each color is a utility: bg-canvas, bg-panel, text-ink, text-muted, border-line,
+   bg-accent. Change the two accent values to rebrand the app. A status is its color
+   as text on its soft tint: text-warning on bg-warning-soft. */
+@theme {
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  --color-canvas: #f8f4ee;
+  --color-panel: #ffffff;
+  --color-surface: #f3ece2;
+  --color-ink: #16130f;
+  --color-muted: #6b6157;
+  --color-line: #e3d8c9;
+  --color-accent: #a84f1a;
+  --color-accent-hover: #8f4214;
+  --color-ring: rgb(168 79 26 / 0.4);
+
+  --color-success: #2e6b45;
+  --color-success-soft: #e3efe2;
+  --color-warning: #855800;
+  --color-warning-soft: #f7e8bd;
+  --color-danger: #a3271f;
+  --color-danger-soft: #f7dfdb;
+
+  /* Corners stay sharp: every size above md is md, so rounded-xl renders as 6px. */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 6px;
+  --radius-xl: 6px;
+  --radius-2xl: 6px;
+  --radius-3xl: 6px;
+  --radius-4xl: 6px;
+}
+
+/* Tables and form fields look finished with no classes; any utility class overrides
+   these. Swagger UI styles /api-docs itself, so the table and field defaults skip it. */
+@layer base {
+  /* Tailwind 4 draws a bare `border` in the text color; this keeps it the soft line. */
+  *,
+  ::before,
+  ::after,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-line);
+  }
+
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    /* Native checkboxes, radios and range sliders take the accent, not browser blue. */
+    accent-color: var(--color-accent);
+  }
+
+  :is([type="checkbox"], [type="radio"]):not(.swagger-ui *) {
+    width: 1rem;
+    height: 1rem;
+    vertical-align: -0.15em;
+  }
+
+  :focus-visible:not(.swagger-ui *) {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  table:not(.swagger-ui *) {
+    width: 100%;
+    border: 1px solid var(--color-line);
+    background: var(--color-panel);
+    font-size: var(--text-sm);
+  }
+
+  th:not(.swagger-ui *),
+  td:not(.swagger-ui *) {
+    padding: 0.625rem 0.875rem;
+    text-align: left;
+  }
+
+  th:not(.swagger-ui *) {
+    background: var(--color-surface);
+    color: var(--color-muted);
+    font-weight: 500;
+  }
+
+  td:not(.swagger-ui *) {
+    border-top: 1px solid var(--color-line);
+    font-variant-numeric: tabular-nums;
+  }
+
+  :is(input, select, textarea):not([type="checkbox"], [type="radio"], [type="range"], [type="file"], .swagger-ui *) {
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    background: var(--color-panel);
+    padding: 0.5rem 0.75rem;
+  }
+}

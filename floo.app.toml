@@ -1,0 +1,48 @@
+[app]
+name = "inventory-tracker"
+access_mode = "accounts"
+
+# The gateway is the only way in. Pages need a signed-in user; /api takes an app
+# API key holding the "api" scope (floo apps keys create ... --scope api).
+# Any app with a key route must also declare "/" explicitly.
+[[routes]]
+path = "/"
+access = "accounts"
+service = "web"
+
+[[routes]]
+path = "/api"
+access = "api_key"
+# Keep "api": keys are minted per app, so it is already private to this app.
+# Renaming a scope after the first deploy is refused on push.
+scope = "api"
+service = "web"
+
+[services.web]
+type = "web"
+path = "."
+port = 3000
+# Runs once per deploy before traffic moves; a failure stops the deploy and the
+# previous revision keeps serving. floo dev runs it before starting the app.
+migrate_command = "node_modules/.bin/tsx scripts/migrate.ts"
+# What floo dev runs locally, after migrate_command.
+dev_command = "npm run dev"
+# 0 bills only while serving requests. floo pings the app every five minutes so it
+# stays running and does not cold-start between visits (Postgres still pauses after
+# 5 idle minutes). Set 1 to reserve an instance; it is billed while idle.
+# https://getfloo.com/docs/guides/cold-starts
+min_instances = 0
+
+# Only the default Postgres resource injects the unsuffixed DATABASE_URL.
+[managed.default]
+type = "postgres"
+
+# Daily low-stock check. It runs in the web service's image with the same DATABASE_URL,
+# and writes a low_stock_reports row that the item list shows as "Last low-stock check".
+# The schedule is UTC (there is no timezone field): 13:00 UTC is early morning in the US.
+# Run it now with `floo cron run low-stock`.
+[cron.low-stock]
+schedule = "0 13 * * *"
+command = "node_modules/.bin/tsx scripts/low-stock.ts"
+service = "web"
+timeout = 120

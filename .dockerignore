@@ -1,0 +1,14 @@
+.git
+.worktrees
+node_modules
+.next
+coverage
+*.tsbuildinfo
+.env*
+.floo
+.DS_Store
+npm-debug.log*
+# floo reads floo.app.toml from the repository, never from the image. Keeping it out
+# of the build context makes a fresh project's context identical to the template's,
+# so every layer of the first build can come from the template's cache.
+floo.app.toml

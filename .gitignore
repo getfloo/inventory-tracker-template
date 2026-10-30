@@ -1,0 +1,10 @@
+.worktrees/
+node_modules/
+.next/
+coverage/
+*.tsbuildinfo
+.env*
+.floo/
+!.floo/services.lock
+.DS_Store
+npm-debug.log*
