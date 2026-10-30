@@ -16,7 +16,10 @@ A shared inventory tracker for a warehouse, stockroom or office: your team signs
 Paste this into Claude Code, Codex or Cursor:
 
 ```text
-Deploy https://github.com/getfloo/inventory-tracker-template on floo. Follow https://getfloo.com/agents.md.
+Deploy the template at https://github.com/getfloo/inventory-tracker-template on floo for me.
+Follow https://getfloo.com/agents.md to create a floo-hosted project, replace its
+starter code with this template's files (keep the project's [app] name in
+floo.app.toml), push, and give me the live URL.
 ```
 
 Or do it yourself. Click **Use this template** on GitHub to create your own repository, then:
