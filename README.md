@@ -2,6 +2,8 @@
 
 A shared inventory tracker for a warehouse, stockroom or office: your team signs in, records stock in and out, and sees what is running low.
 
+![Inventory tracker running on floo, with sample data](docs/screenshot.png)
+
 ## What you get
 
 - **Sign-in for your team, with roles.** floo runs the login. Admins add and edit items; members record stock movements. Nobody else gets in.
