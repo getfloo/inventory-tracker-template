@@ -10,7 +10,7 @@ A shared inventory tracker for a warehouse, stockroom or office: your team signs
 - **Stock that always adds up.** Every change is a movement (in, out or adjustment) with who, when and a note. Quantity on hand is updated in the same database transaction, so it always equals the sum of the movements and can never go below zero.
 - **Low-stock view.** Search by SKU, name or location, filter to items at or below their reorder point, and open any item for its full movement history.
 - **Daily low-stock check.** A floo cron job records which items need reordering every morning, and the item list shows the latest check.
-- **Agent API.** Your agents can list low-stock items, read an item with its recent movements and record movements, with an app API key and a generated OpenAPI document.
+- **Agent API.** Your agents can list low-stock items, read an item with its recent movements and record movements, with your own floo key or an app API key, and a generated OpenAPI document.
 - **Managed Postgres.** Migrations run once per deploy. Nothing to provision.
 
 ## Deploy with your agent
@@ -82,7 +82,7 @@ npm test
 | `/items/[id]` | everyone signed in | Item details, movement form, latest 50 movements |
 | `/items/new`, `/items/[id]/edit` | admins | Add an item (with an opening quantity), edit its details |
 | `/api-docs` | everyone signed in | The API reference |
-| `/api/*` | API keys with the `api` scope | The agent API |
+| `/api/*` | Members' floo keys, and app API keys with the `api` scope | The agent API |
 
 **Roles.** floo sends each person's app role (`admin` or `member`) in a header that only its gateway can set. The server checks it on every admin page and action.
 
