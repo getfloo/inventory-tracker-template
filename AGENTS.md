@@ -66,9 +66,10 @@ is calling in `X-Floo-*` headers; it strips any the client sent.
 - Pages and actions serve signed-in people. Call `getIdentity()`; it returns
   `{ kind: "user", id, email, name, role }` and throws if the request did not
   come through the gateway. Roles pass through unchanged.
-- `/api` serves programs holding an app API key. Call `callerFrom(request.headers)`;
-  it returns either that user or `{ kind: "api_key", id, name, keyId, scopes }`,
-  where `id` is the key's consumer, stable across key rotation.
+- `/api` serves programs. Call `callerFrom(request.headers)`. The floo key of
+  anyone with access to the app (their agent, through `curl` or the floo MCP)
+  returns that user, with their role. An app API key returns `{ kind: "api_key", id, name, keyId,
+  scopes }`, where `id` is the key's consumer, stable across key rotation.
 - Use the returned `id` for `actor_id` and any ownership filter, never a submitted id.
 - Use `getDb()`; `DATABASE_URL` is the only credential this app reads. Never
   write connection strings or read `PG*`, keys, or other credentials.
@@ -112,15 +113,20 @@ migrations out of the start command: every cold start would wait on them.
    add its `operations` to `app/api/operations.ts`. Both `/api/openapi.json` and
    `/api-docs` update from it. `scripts/test` fails if a handler is undocumented
    or a response does not match its schema.
-4. Push, then mint a key: `POST /v1/apps/$APP_ID/consumers` `{"name":"my-agent"}`
-   (`floo apps consumers create my-agent`), then `POST .../consumers/<id>/keys` with
-   `{"name":"my-agent-key","scopes":["api"]}`; its `raw_key` is shown once
-   (`floo apps keys create my-agent-key --consumer my-agent --scope api`). Call the API:
+4. Push, then call it as yourself with your floo key. On `/api` the gateway
+   admits app members, strips the key, and passes your identity, so `callerFrom`
+   returns you:
 ```sh
-curl -H "Authorization: Bearer $KEY" "https://<app>-dev.on.getfloo.com/api/items?low=true"
-curl -H "Authorization: Bearer $KEY" https://<app>-dev.on.getfloo.com/api/openapi.json
+curl -H "Authorization: Bearer $FLOO_KEY" "https://<app>-dev.on.getfloo.com/api/items?low=true"
+curl -H "Authorization: Bearer $FLOO_KEY" https://<app>-dev.on.getfloo.com/api/openapi.json
 ```
-Hand another agent the app URL and a key: `/api/openapi.json` tells it the rest.
+With the floo MCP connected, `search_app_api`, `read_app_api` and `write_app_api`
+do the same; pass `environment: "dev"` while you build, `"prod"` only for live
+data. For a program that is not you, mint an app API key:
+`POST /v1/apps/$APP_ID/consumers` `{"name":"my-agent"}` (`floo apps consumers create
+my-agent`), then `POST .../consumers/<id>/keys` with `{"name":"my-agent-key","scopes":["api"]}`;
+its `raw_key` is shown once (`floo apps keys create my-agent-key --consumer my-agent
+--scope api`). Hand that program the app URL and its key: `/api/openapi.json` tells it the rest.
 Wrong or missing keys get the gateway's 401 before reaching the app. Scopes are
 exact labels: a key must hold the route's `scope` to pass. Keep `scope = "api"`:
 keys belong to one app, so no other app's key can pass, and renaming a scope after
