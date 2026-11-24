@@ -96,7 +96,7 @@ git add . && git commit -m "Add application feature"
 git push
 ```
 Then `GET /v1/apps/$APP_ID/deploys?commit_sha=<full sha>`, retrying while empty, and
-`GET .../deploys/<id>?wait=45` until it finishes, `live` or failed (`floo deploys watch`).
+`GET .../deploys/<id>?wait=45` until it finishes, `live` or failed (`floo status --wait`).
 Generate through this script so SQL references stay schema independent.
 Commit the generated SQL, journal, and snapshots; never edit applied migrations.
 A failed migration stops the deploy and keeps the previous revision live. Keep
@@ -154,5 +154,5 @@ the first deploy is refused on push.
 
 ## When a deploy fails
 `GET /v1/apps/$APP_ID/deploys/<id>` names what failed in `failure_step` and `diagnostics`
-(`floo deploys watch`); `build_logs` holds build, startup and migration output
-(`floo deploys logs`). Runtime logs: `GET /v1/apps/$APP_ID/logs` (`floo logs query`).
+(`floo status --wait`); `build_logs` holds build, startup and migration output
+(`floo logs build`). Runtime logs: `GET /v1/apps/$APP_ID/logs` (`floo logs query`).
